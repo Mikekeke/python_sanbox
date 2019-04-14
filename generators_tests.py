@@ -10,9 +10,15 @@ def gen3():
     yield 1
     yield 2
 
+def trace(x):
+    print(f'trace: {x}')
+    return x
+
 def coroutine():
     for i in range(1, 4):
-        print("From generator {}".format((yield i)))
+        # print("From generator {}".format((yield (trace(i))))) # same as below
+        sent = yield trace(i)
+        print("From generator {}".format(sent))
 
 
 
@@ -41,7 +47,8 @@ if __name__ == '__main__':
 
 
     c = coroutine()
-    c.send(None)
+    vNone = c.send(None)
+    print(f'vNone = {vNone}')
     try:
         while True:
             print("From user {}".format(c.send(1)))
@@ -51,3 +58,13 @@ if __name__ == '__main__':
     # From generator 1
     # From user 3
     # From generator 1
+
+    print('************')
+    c2 = coroutine()
+    print(next(c2))
+    print(next(c2))
+    # trace: 1
+    # 1
+    # From generator None
+    # trace: 2
+    # 2
